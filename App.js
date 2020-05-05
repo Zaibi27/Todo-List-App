@@ -2,33 +2,50 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput , Button, ScrollView, TouchableOpacity } from 'react-native';
 import { render } from 'react-dom';
 import MyButton  from "./components/buttonComponent" ;
+import {todoItems} from "./Constants/TodoConstants" ;
+
+
+
 
 export default class App extends React.Component {
+  
   constructor(props){
     super(props) ;
     this.state = {
       inputText : "" ,
-      myList: [] ,
+      myList: todoItems  ,
       index: 0 ,
       buttonTitle: "ADD"
       
     }
+    
+
+
   }
+
+
+
+  
+    
+
+  
+  
 
   addItem = () => {
+    
     if(this.state.buttonTitle === "ADD"){
-    if(this.state.inputText == ""){
-      return
-
-    }
-    else{
-    this.state.myList.push({key : Math.random().toString() , data : this.state.inputText , itemNo: this.state.myList.length +1 + ". "}) ;
+     
+    
+    this.state.myList.push({key : Math.random().toString() , data : this.state.inputText }) ;
     this.setState({inputText: ""}) ;
-    }
+      
+    
   }
   else if(this.state.buttonTitle === "UPDATE"){
-    if(this.state.inputText == ""){
-      this.setState({buttonTitle: "ADD"})
+    if(this.state.inputText.length === ""){
+
+      this.setState({myList: newList , inputText: "" , buttonTitle: "ADD"})
+      
 
     }
     else{
@@ -36,6 +53,7 @@ export default class App extends React.Component {
     newList[this.state.index].data = this.state.inputText
     this.setState({myList: newList , inputText: "" , buttonTitle: "ADD"})
     }
+    
 
   }
   }
@@ -50,9 +68,39 @@ export default class App extends React.Component {
     
     this.setState({inputText : data }) ;
   }
+
+  
   
 
   render(){
+    const scrollShow = ( 
+      <ScrollView style={styles.scrollView}>
+        {this.state.myList.map((item , indexx ) =>
+  
+          // <TouchableOpacity  onPress={() => this.removeItem(item.key)}>
+  
+             <View style={styles.scrollItems} key = {item.key} >
+               
+               <TouchableOpacity  onPress={ () => this.setState({inputText: (item.data) , buttonTitle: "UPDATE" , index: indexx  })} >
+                   
+                <Text style={{color: "white" , fontSize: 30 }}> {indexx + 1 }.  {item.data} </Text>
+                   </TouchableOpacity>
+                   <View>
+                   <TouchableOpacity  onPress={() => this.removeItem(item.key)}>
+                     <Text style={styles.crossText} >X</Text>
+                     </TouchableOpacity>
+                   </View>
+                   </View>
+              ) } 
+  
+  </ScrollView>) ;
+
+const NoTaskView = (
+  <View style={{padding: 30 }} >
+  <Text style = {{fontSize: 25 ,  fontStyle: "italic", color: "lightgray"}}>No tasks yet </Text>
+  </View>
+);
+
   return (
     <View style={styles.container}>
       <Text style = {styles.title}> Todo List  </Text>
@@ -60,38 +108,12 @@ export default class App extends React.Component {
      <TextInput style={styles.textInput} placeholder= "Enter here " 
      onChangeText = { text => this.setState({ inputText : text })}   
      value = {this.state.inputText} /> 
-     <MyButton text= {this.state.buttonTitle} onPressEvent = {this.addItem}> </MyButton>
+     <MyButton text= {this.state.buttonTitle} onPressEvent = {this.addItem} disabled= {this.state.inputText.length <= 0 }> </MyButton>
      
      
      </View>
+     {this.state.myList.length <= 0 ? NoTaskView : scrollShow}
      
-     <ScrollView style={styles.scrollView}>
-             {this.state.myList.map((item , indexx ) =>
-  
-               // <TouchableOpacity  onPress={() => this.removeItem(item.key)}>
-
-                  <View style={styles.scrollItems} key = {item.key} >
-                    
-                    <TouchableOpacity  onPress={ () => this.setState({inputText: (item.data) , buttonTitle: "UPDATE" , index: indexx , key: item.key })} >
-                        
-                     <Text style={{color: "white" , fontSize: 30 }}> {indexx + 1 }.  {item.data} </Text>
-                        </TouchableOpacity>
-                        <View>
-                        <TouchableOpacity  onPress={() => this.removeItem(item.key)}>
-                          <Text style={styles.crossText} >X</Text>
-                          </TouchableOpacity>
-                        </View>
-
-                        
-                        
-                   </View>
-                      
-                  
-                  
-                 
-              ) } 
-  
-     </ScrollView>
     </View>
     
   );
@@ -150,7 +172,7 @@ const styles = StyleSheet.create({
   },
   scrollItems:{
     flexDirection : "row" ,
-    backgroundColor: "olivedrab",
+    backgroundColor: "indianred",
     alignItems: "center",
     justifyContent: "space-between" ,
     padding: 10 ,
